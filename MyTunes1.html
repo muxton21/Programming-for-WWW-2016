@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE>
+<html>
+   <head>
+      <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+      <meta content="utf-8" http-equiv="encoding">
+      <script src="music.js" type="text/javascript"></script>
+      <script id="genericBird" type="text/html">
+         <table class='outlineTable'>
+         <tr>
+            <td class='outlineTable'>
+                <p align='center' id='artwork'></p>
+            </td>
+            <td class='outlineTable'>
+          <p align='center'></p>
+          <table id='descriptionTable' border='0'>
+          <tr>
+          <td id='birdInfo'>
+          </td>
+          </tr>                                                                      
+          </table>
+            </td>
+            </tr>   
+         </table>
+          <p align='center' id='audio'>
+          <audio controls='controls' align='center' id='audioPlayer' autoplay='autoplay'>
+           </audio>
+           </p>
+      </script>
+      <script type="text/javascript">
+         function functionMain() {
+             document.getElementById("tableAlbums").innerHTML =("<select id='tableAlbums1' size='"+albums.length+"'></select>")
+             for (var i=0;i<albums.length;i++) {
+                 document.getElementById("tableAlbums1").innerHTML += ("<option onClick='albumTracks(this.id)' id='" +i + "'>"  + albums[i].title + "</option>"); 
+             }
+         }
+         function albumTracks(clicked_id) {
+             var tracks = albums[clicked_id].tracks;
+             document.getElementById("tableTrackList").innerHTML = ("<select id='trackList' size='"+tracks.length+"'></select>")
+             for(var i=0;i<tracks.length;i++){
+                 document.getElementById("trackList").innerHTML += ("<option id='"+i+"' id='"+i+"' onClick='displayBirds(this.id); '>"+tracks[i].title+"</option>")
+             }
+         }
+          
+         function displayBirds(clicked_id){
+             var results = [];
+             for(var i=0;i<albums.length;i++){
+                 results[results.length] = albums[i].title
+             }
+             var birdInfo = albums[clicked_id].tracks;
+             var z = (clicked_id);
+             var y = results.indexOf(document.getElementById("tableAlbums1").value);
+             var tracks = albums[y].tracks;
+             var x = document.getElementById("genericBird").innerHTML;
+             document.getElementById("trackDetails").innerHTML = ("<h4 align='center'>" + tracks[z].title + "</h4>");
+             document.getElementById("trackDetails").innerHTML += (x);
+             document.getElementById("birdInfo").innerHTML += ("<p>Title: " + albums[y].title + "</p><p>Artist: " + albums[y].artist + "</p><p>Artwork: " + albums[y].artwork + "</p><p>Lyrics: " + tracks[z].lyrics + "</p>");
+           document.getElementById("artwork").innerHTML +=  ("<img src='artwork/" + albums[y].artwork + ".jpg' align='center' height='50%'>")
+           document.getElementById("audioPlayer").innerHTML += ("<source src='audio/"+ albums[y].artist + "/" +albums[y].title+ "/" +tracks[z].mp3 +"' type='audio/mpeg'></source>")
+           document.getElementById("audioPlayer").innerHTML += ("<source src='audio/"+ albums[y].artist + "/" +albums[y].title+ "/" +tracks[z].mp3.substr(0,tracks[z].mp3.length-3)+"wav" +"' type='audio/mpeg'></source>")
+         }
+         function keyboardClear(){
+             document.getElementById("text").value = ("");
+         }
+         function backButton(){
+             var currentValue = document.getElementById("text").value;
+             document.getElementById("text").value = ( currentValue.substring(0,currentValue.length -1));
+         }
+         function found(string,pattern){
+             string = string.toLowerCase();   // sets string to lower case 
+             pattern = pattern.toLowerCase(); //sets pattern to lower case
+             if ( string.indexOf(pattern) != -1){ //if the pattern is contained in the string return true
+                 return true;
+             }
+             return false;
+         }
+          function initTracks(){
+              //get the input elements from the id keyboard "keyboard 
+              var buttons=document.getElementById("keyboardButtons").getElementsByTagName("input");
+              document.getElementById("text").value = ("");
+              // loop through the elements with tag name input
+              var keyboardLetters = "QWERTYUIOPASDFGHJKLZXCVBNM".split("");
+              for(var j=0;j<buttons.length;j++) {
+                  if(buttons[j].type==="button") { //if input typeis button then...
+                      buttons[j].setAttribute("onclick","searchTracks(); document.getElementById('text').value += ('"+keyboardLetters[j]+"');") //add onClick handle to the function searchTracks();
+                      }
+                  }
+              }
+          function initLyrics(){
+              //get the input elements from the id keyboard "keyboard 
+              var buttons=document.getElementById("keyboardButtons").getElementsByTagName("input");
+              document.getElementById("text").value = ("");
+              // loop through the elements with tag name input
+              var keyboardLetters = "QWERTYUIOPASDFGHJKLZXCVBNM".split("");
+              for(var j=0;j<buttons.length;j++) {
+                  if(buttons[j].type==="button") { //if input typeis button then...
+                      buttons[j].setAttribute("onclick","searchLyrics(); document.getElementById('text').value += ('"+keyboardLetters[j]+"');") //add onClick handle to the function searchTracks();
+                      }
+                  }
+              }
+         function searchTracks(){
+             var pattern = document.getElementById("text").value
+             var pattern = pattern.toLowerCase(); // sets pattern to lower case
+             var results = []; // creates an empty array called result
+             var tracks = [];
+             var finalResults = [];
+             for(var i=0;i<albums.length;i++){
+                 tracks[tracks.length] = albums[i].tracks;
+             }
+             for(var j=0;j<tracks.length;j++){
+                 var tracksTemp = tracks[j] 
+                 for(var k=0;k<tracksTemp.length;k++){
+                     results[results.length] = tracksTemp[k].title;
+                 }
+             }
+             for( var l=0;l<results.length;l++){
+                 if(found(results[l],pattern) === true && pattern.length >0){
+                     finalResults[finalResults.length] = results[l]
+                 }
+             }
+             document.getElementById("results").innerHTML = ("<select id='resultsScroll' class='resultsScroll' size='4'></select>");
+             for(var m=0;m<finalResults.length;m++ ){
+                 document.getElementById("resultsScroll").innerHTML += ("<option id='bird"+m+"' onClick='searchSelectTracks(this.id);'>"+finalResults[m]+"</option>")
+             }
+            return finalResults; 
+         }
+         function searchLyrics(){
+             var pattern = document.getElementById("text").value
+             var pattern = pattern.toLowerCase(); // sets pattern to lower case
+             var results = []; // creates an empty array called result
+             var lyrics = [];
+             var finalResults = [];
+             for(var i=0;i<albums.length;i++){
+                 lyrics[lyrics.length] = albums[i].tracks;
+             }
+             for(var j=0;j<lyrics.length;j++){
+                 var lyricsTemp = lyrics[j] 
+                 for(var k=0;k<lyricsTemp.length;k++){
+                     results[results.length] = lyricsTemp[k].lyrics;
+                 }
+             }
+             for( var l=0;l<results.length;l++){
+                 if(found(results[l],pattern) === true && pattern.length >0){
+                     finalResults[finalResults.length] = results[l]
+                 }
+             }
+             document.getElementById("results").innerHTML = ("<select id='resultsScroll' class='resultsScroll' size='4'></select>");
+             for(var m=0;m<finalResults.length;m++ ){
+                 document.getElementById("resultsScroll").innerHTML += ("<option id='bird"+m+"' onClick='searchSelectLyrics(this.id);'>"+finalResults[m].substr(0,40)+"..."+"</option>")
+             }
+            return finalResults; 
+         }
+          function searchSelectTracks(clicked_id){
+              var searchResults = searchTracks();
+              for(var i=0;i<albums.length;i++){
+                  var tempTracks = albums[i].tracks;
+                  var results0 = [];
+                  for (var j=0;j<tempTracks.length;j++){
+                      results0[results0.length] = tempTracks[j].title;
+                  }
+                  var clickedValue = document.getElementById(clicked_id).value;
+                  if(results0.indexOf(clickedValue) != -1){
+                      var trackNum = results0.indexOf(clickedValue);
+                      tableAlbums1.options[i].selected = true;
+                      tableAlbums1.options[i].click();
+                      trackList.options[trackNum].selected = true;
+                      trackList.options[trackNum].click();
+                      }
+                  }
+              }
+          function searchSelectLyrics(clicked_id){
+              var clickedValue = document.getElementById(clicked_id).value
+              var searchResults = searchTracks();
+              for(var i=0;i<albums.length;i++){
+                  var tempTracks = albums[i].tracks;
+                  var results0 = [];
+                  for (var j=0;j<tempTracks.length;j++){
+                      results0[results0.length] = (tempTracks[j].lyrics.substr(0,40)+"...");
+                  }
+                  var trackNum = results0.indexOf(clickedValue);
+                  if(results0.indexOf(clickedValue) != -1){
+                      var trackNum = results0.indexOf(clickedValue);
+                      tableAlbums1.options[i].selected = true;
+                      tableAlbums1.options[i].click();
+                      trackList.options[trackNum].selected = true;
+                      trackList.options[trackNum].click();
+                      }
+                  }
+              }
+          function initLoadTracks(){
+              trackSearch.click();
+          }
+      </script>
+      <style>
+         #header{
+         color: white;
+         font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+         }
+         h1{
+         }
+         html{
+         color: white;
+         background: #5f2c82;
+         background: -webkit-linear-gradient(to left, #5f2c82 , #49a09d); 
+         background: linear-gradient(to left, #5f2c82 , #49a09d); 
+         }
+         #descriptionTable {
+         border-color:transparent;
+         }
+         .outlineTable{
+         border-color:transparent;
+         }
+         table, th, td {
+         border: 1px;
+         border-radius: 15px;
+         border-style: solid;
+         border-color: #d3d3d3;
+         padding: 5px;
+         }
+         #text {
+         width: 600px;
+         font-size: 200%;
+         }
+         #keyboard {
+         padding:10px 15px;
+         text-align:center;
+         }
+         #keyboard div {
+         margin:5px 0;
+         }
+         #space {
+         width:184px;
+         }
+         #keyboard label {
+         margin-top:20px;
+         font-family:serif;
+         text-decoration:underline;
+         }
+         #keyboard input {
+         box-shadow:2px 2px 2px #666;
+         }
+         #keyboard input[type="text"] {
+         margin-top:20px;
+         border:1px solid #666;
+         border-radius:4px;
+         box-shadow:none;
+         }
+         #keyboard #back {
+         font-weight:bold;
+         }
+         input {
+         height:40px;
+         width:50px;
+         }
+      </style>
+   </head>
+   <body onload="initLoadTracks();functionMain();">
+      <div align="center">
+         <table width="90%">
+            <tr>
+               <td width="20%">
+                  <p align="center" id="tableAlbums">
+                  </p>
+               </td>
+               <td width="20%">
+                  <p align="center">
+                  <h4 id ="tableTrackList"align='center'>Track List</h4>
+                  </p>
+               </td>
+               <td id="trackDetails" width="60%">
+                  <p align="center"></p>
+                  <h4 align="center">Track Information</h4>
+               </td>
+            </tr>
+            <tr>
+               <td colspan="3" >
+                  <table id="descriptionTable">
+                     <tr>
+                        <td width="50%">
+                           <form id="searchSelect" align="center">
+                              <input type="radio" id="trackSearch" name="Search" checked="checked" onClick="initTracks();"/>Search Tracks
+                              <input type="radio" id ="lyricsSearch" name="Search" onClick="initLyrics();"/>Search Lyrics
+                           </form>
+                           <input align="center" id="text" placeholder="Track Search..." autocomplete="off" readonly="readonly" onChange="searchTracks();">
+                           <div id="keyboard">
+                              <div id="keyboardButtons">
+                                 <div>
+                                    <input type="button" id="Q" value="Q" onClick="document.getElementById('text').value += ('Q'); ">
+                                    <input type="button" name="letter" value="W" onClick="document.getElementById('text').value += ('W');">
+                                    <input type="button" name="letter" value="E" onClick="document.getElementById('text').value += ('E');">
+                                    <input type="button" name="letter" value="R" onClick="document.getElementById('text').value += ('R');">
+                                    <input type="button" name="letter" value="T" onClick="document.getElementById('text').value += ('T');">
+                                    <input type="button" name="letter" value="Y" onClick="document.getElementById('text').value += ('Y');">
+                                    <input type="button" name="letter" value="U" onClick="document.getElementById('text').value += ('U');">
+                                    <input type="button" name="letter" value="I" onClick="document.getElementById('text').value += ('I');">
+                                    <input type="button" name="letter" value="O" onClick="document.getElementById('text').value += ('O');">
+                                    <input type="button" name="letter" value="P" onClick="document.getElementById('text').value += ('P');">
+                                 </div>
+                                 <div>
+                                    <input type="button" name="letter" id="letter" value="A" onClick="document.getElementById('text').value += ('A');searchTracks(); ">
+                                    <input type="button" name="letter" id="letter" value="S" onClick="document.getElementById('text').value += ('S');searchTracks(); ">
+                                    <input type="button" name="letter" id="letter" value="D" onClick="document.getElementById('text').value += ('D');searchTracks(); ">
+                                    <input type="button" name="letter" id="letter" value="F" onClick="document.getElementById('text').value += ('F');searchTracks(); ">
+                                    <input type="button" name="letter" id="letter" value="G" onClick="document.getElementById('text').value += ('G');searchTracks(); ">
+                                    <input type="button" name="letter" id="letter" value="H" onClick="document.getElementById('text').value += ('H');searchTracks(); ">
+                                    <input type="button" name="letter" id="letter" value="J" onClick="document.getElementById('text').value += ('J');searchTracks(); ">
+                                    <input type="button" name="letter" id="letter" value="K" onClick="document.getElementById('text').value += ('K');searchTracks(); ">
+                                    <input type="button" name="letter" id="letter" value="L" onClick="document.getElementById('text').value += ('L');searchTracks(); ">
+                                 </div>
+                                 <div>
+                                    <input type="button" name="letter" id="letter" value="Z" onClick="document.getElementById('text').value += ('Z');searchTracks(); ">
+                                    <input type="button" name="letter" id="letter" value="X" onClick="document.getElementById('text').value += ('X');searchTracks(); ">
+                                    <input type="button" name="letter" id="letter" value="C" onClick="document.getElementById('text').value += ('C');searchTracks(); ">
+                                    <input type="button" name="letter" id="letter" value="V" onClick="document.getElementById('text').value += ('V');searchTracks(); ">
+                                    <input type="button" name="letter" id="letter" value="B" onClick="document.getElementById('text').value += ('B');searchTracks(); ">
+                                    <input type="button" name="letter" id="letter" value="N" onClick="document.getElementById('text').value += ('N');searchTracks(); ">
+                                    <input type="button" name="letter" id="letter" value="M" onClick="document.getElementById('text').value += ('M');searchTracks(); ">
+                                 </div>
+                              </div>
+                              <div>
+                                 <input id="back" type="button" value="←" onClick="backButton();">
+                                 <input id="space" type="button" name="letter" onClick="document.getElementById('text').value+=' '">
+                                 <input id="clear" type="reset" value="clear" onclick="keyboardClear();">
+                              </div>
+                            </div>
+                         </td>
+                        <td width="50%" align="center"><p align="center" id="results">Results</p></td>
+                     </tr>
+                  </table>
+                </td>
+       </tr>
+    </body>
+</html>
+
